@@ -1,5 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { Input, Form, Checkbox, Button } from 'antd';
+import { useDispatch } from 'react-redux';
+import { signUpAction } from '../reducers/user';
 
 export const useInput = (initValue = null) =>{
     const [value, setter] = useState(initValue);
@@ -17,8 +19,10 @@ const Signup = () => {
     const [termError, setTermError] = useState(false);
 
     const [id, onChangeId] = useInput('');
-    const [nick, onChangeNick] = useInput('');
+    const [nickname, onChangeNickname] = useInput('');
     const [password, onChangePassword] = useInput('');
+
+    const dispatch = useDispatch();
     
     const onSubmit = useCallback((e) => {
         e.preventDefault();
@@ -30,13 +34,12 @@ const Signup = () => {
             return setTermError(true);
         }
 
-        console.log({
+        dispatch(signUpAction({
             id,
-            nick,
             password,
-            passwordCheck,
-            term
-        })
+            nickname,
+        }));
+
     }, [password, passwordCheck, term]);
 
     const onChangePasswordCheck = useCallback((e) => {
@@ -61,7 +64,7 @@ const Signup = () => {
                 <div>
                     <label htmlFor="user-nick">닉네임</label>
                     <br />
-                    <Input name="user-nick" value={nick} required onChange={onChangeNick}></Input>
+                    <Input name="user-nick" value={nickname} required onChange={onChangeNickname}></Input>
                 </div>
                 <div>
                     <label htmlFor="user-password">비밀번호</label>

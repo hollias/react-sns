@@ -1,17 +1,12 @@
-import { Menu, Input, Row, Col, Card, Avatar, Form, Button } from 'antd';
+import { Menu, Input, Row, Col } from 'antd';
 import Link from 'next/link';
-import Meta from 'antd/lib/card/Meta';
 import LoginForm from './LoginForm';
-
-const dummy = {
-    nickname : '이남수',
-    Post : [],
-    Followings : [],
-    Followers : [],
-    isLoggedIn : false
-}
+import UserProfile from './UserProfile';
+import { useSelector } from 'react-redux';
 
 const AppLayout = ({ children }) => {
+    const { isLoggedIn } = useSelector(state => state.user);
+    
     return (
         <div>
             <Menu mode="horizontal">
@@ -27,22 +22,14 @@ const AppLayout = ({ children }) => {
             </Menu>
             <Row gutter={8}>
                 <Col xs={24} md={6}>
-                    {dummy.isLoggedIn ? 
-                    
-                    <Card
-                        actions={[
-                            <div key="twit">남슈 <br />{dummy.Post.length}</div>,
-                            <div key="following">팔로잉 <br />{dummy.Followings.length}</div>,
-                            <div key="follower">팔로워 <br />{dummy.Followers.length}</div>
-                        ]}>
-                        <Meta avatar={<Avatar>{dummy.nickname[0]}</Avatar>} title={dummy.nickname}/>
-                    </Card>
+                    {isLoggedIn ? 
+                    <UserProfile />
                     :
                     <LoginForm />
                     }
                 </Col>
                 <Col xs={24} md={12}>{children}</Col>
-                <Col xs={24} md={6}>세번째</Col>
+                <Col xs={24} md={6}><Link href="https://www.zerocho.com"><a target="_black">아아아</a></Link></Col>
             </Row>
             
         </div>
