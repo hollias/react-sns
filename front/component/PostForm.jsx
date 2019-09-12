@@ -1,16 +1,40 @@
-import React from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { Form, Input, Button } from 'antd';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { ADD_POST_REQUEST } from '../reducers/post';
 
 const PostForm = () => {
-    const imagePaths = useSelector(state => state.post.imagePaths)
+    const dispatch = useDispatch();
+    const { imagePaths, isAddingPost, postAdded } = useSelector(state => state.post);
+    const [text, setText] = useState('');
+
+    useEffect(() => {
+        if (postAdded) {
+            setText('');
+        }
+    }, [postAdded]);
+
+    const onSubmitForm = useCallback((e) => {
+        e.preventDefault();
+        dispatch({
+            type : ADD_POST_REQUEST,
+            data : {
+                text,
+            }
+        });
+    }, []);
+
+    const onChangeText = useCallback((e) => {
+        setText(e.target.value);
+    }, []);
+
     return (
         <div>
-            <Form encType="multipart/form-data" style={{ margin : '10px 0 20px' }}>
-                <Input.TextArea maxLength={140} placeholder="오늘의 메뉴를 입력해주세요." />
+            <Form encType="multipart/form-data" style={{ margin : '10px 0 20px' }} onSubmit={onSubmitForm}>
+                <Input.TextArea maxLength={140} placeholder="오늘의 메뉴를 입력해주세요." value={text} onChange={onChangeText}/>
                 <div>
                     <Button>이미지 업로드</Button>
-                    <Button type="primary" stype={{ float : 'right' }} htmlType="submit">찰칵</Button>                    
+                    <Button type="primary" stype={{ float : 'right' }} htmlType="submit" loading={isAddingPost}>등록</Button>    
                 </div>
                 <div>
                     {imagePaths.map((v, i) => {

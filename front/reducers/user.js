@@ -3,6 +3,7 @@ const dummyUser = {
     Post : [],
     Followings : [],
     Followers : [],
+    id : 1,
 }
 
 export const initialState = {
@@ -52,25 +53,6 @@ export const REMOVE_FOLLOWER_SUCCESS = 'REMOVE_FOLLOWER_SUCCESS';
 export const REMOVE_FOLLOWER_FAILURE = 'REMOVE_FOLLOWER_FAILURE';
 
 export const ADD_POST_TO_ME = 'ADD_POST_TO_ME';
-
-
-export const loginAction = {
-    type : LOG_IN_REQUEST,
-    data : {
-        nickname : '이남수'
-    }
-}
-
-export const logoutAction = {
-    type : LOG_OUT_REQUEST,
-}
-
-export const signUpAction = (data) => {
-    return {
-        type: SIGN_UP_REQUEST,
-        data: data
-    }
-}
 
 const reducer = (state = initialState, action) => {
     switch (action.type) {

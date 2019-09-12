@@ -7,4 +7,4 @@ const rootReducer = combineReducers({
     post,
 });
 
-export default rootRed ucer;  
+export default rootReducer;  

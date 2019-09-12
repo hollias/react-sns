@@ -29,7 +29,7 @@ const AppLayout = ({ children }) => {
                     }
                 </Col>
                 <Col xs={24} md={12}>{children}</Col>
-                <Col xs={24} md={6}><Link href="https://www.zerocho.com"><a target="_black">아아아</a></Link></Col>
+                <Col xs={24} md={6}><Link href=""><a target="_black">아아아</a></Link></Col>
             </Row>
             
         </div>
