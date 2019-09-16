@@ -1,4 +1,4 @@
-import { all, delay, fork, put, takeEvery } from 'redux-saga/effects';
+import { all, call, delay, fork, put, takeEvery } from 'redux-saga/effects';
 import axios from 'axios';
 import {
     LOG_IN_FAILURE,
@@ -33,16 +33,16 @@ function loginAPI() {
         yield takeEvery(LOG_IN_REQUEST, login);
     }
     
-    function signUpAPI() {
+    function signUpAPI(signUpData) {
         // 서버에 요청을 보내는 부분
-        return axios.post('/login');
+        return axios.post('http://localhost:8080/api/user', signUpData);
     }
     
-    function* signUp() {
+    function* signUp(action) {
         try {
-            // yield call(signUpAPI);
-            yield delay(2000);
-            throw new Error('에러에러에러');
+            yield call(signUpAPI, action.data);
+            // yield delay(2000);
+            // throw new Error('에러에러에러');
             yield put({ // put은 dispatch 동일
                 type: SIGN_UP_SUCCESS,
             });
