@@ -7,7 +7,7 @@ const router = express.Router();
 router.get('/', (req, res) => {
 
 });
-router.post('/', async (req, res, next) => {
+router.post('/', async (req, res, next) => {    //login
     try {
         const exUser = await db.User.findOne({
             where: {
