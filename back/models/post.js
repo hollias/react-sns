@@ -12,8 +12,9 @@ module.exports = (sequelize, DataTypes) => {
         db.Post.belongsTo(db.User); // 테이블에 UserId 컬럼이 생겨요
         db.Post.hasMany(db.Comment);
         db.Post.hasMany(db.Image);
-        db.Post.belongsToMany(db.Hashtag, { through: 'PostHashtag' });
-        db.Post.belongsToMany(db.User, { through: 'Like', as: 'Likers' });
+        db.Post.belongsTo(db.Post, { as: 'Retweet' });
+        // db.Post.belongsToMany(db.Hashtag, { through: 'PostHashtag' });
+        // db.Post.belongsToMany(db.User, { through: 'Like', as: 'Likers' });
     };
     return Post;
   };
