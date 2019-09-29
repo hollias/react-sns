@@ -6,7 +6,7 @@ import { loginAction, logoutAction } from '../reducers/user';
 
 const Home = () => {
     const dispatch = useDispatch();
-    const { isLoggedIn } = useSelector(state => state.user);
+    const { me } = useSelector(state => state.user);
     const { mainPosts } = useSelector(state => state.post);
 
     useEffect(() => {
@@ -15,7 +15,7 @@ const Home = () => {
 
     return (
         <>
-            {isLoggedIn && <PostForm />}
+            {me && <PostForm />}
             {mainPosts.map((c, i) => {
                 return (
                     <PostCard key={i} post={c} />

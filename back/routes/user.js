@@ -6,7 +6,12 @@ const passport = require('passport');
 const router = express.Router();
 
 router.get('/', (req, res) => {
-
+    if(!req.user){
+        return res.status(401).send('로그인이 필요합니다.');
+    }
+    const user = Object.assign({}, req.user.toJSON());
+    delete user.password;
+    return res.json(user);
 });
 router.post('/', async (req, res, next) => {    //login
     try {
