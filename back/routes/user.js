@@ -31,7 +31,6 @@ router.post('/', async (req, res, next) => {    //login
             userId: req.body.userId,
             password: hashedPassword
         });
-        console.log(newUser);
         return res.status(200).json(newUser);
     } catch (e) {
         console.error(e);
@@ -81,7 +80,6 @@ router.post('/login', (req, res, next) => {
                     attributes: ['id', 'nickname', 'userId']
                 });
                 
-                console.log(fullUser);
                 return res.json(fullUser);
             } catch (e) {
                 next(e);

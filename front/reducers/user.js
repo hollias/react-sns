@@ -1,10 +1,3 @@
-const dummyUser = {
-    nickname : '이남수',
-    Post : [],
-    Followings : [],
-    Followers : [],
-    id : 1,
-}
 
 export const initialState = {
     isLoggingOut: false, // 로그아웃 시도중
@@ -63,8 +56,6 @@ const reducer = (state = initialState, action) => {
             };
         }
         case LOG_IN_SUCCESS: {
-            console.log('=======================================');
-            console.log(action.data)
             return {
                 ...state,
                 isLoggingIn: false,
@@ -86,17 +77,19 @@ const reducer = (state = initialState, action) => {
                 isLoggingOut: true,
             };
         }
-        case LOG_OUT_REQUEST: {
-            return {
-                ...state,
-                isLoggingOut: true,
-            };
-          }
-          case LOG_OUT_SUCCESS: {
+        case LOG_OUT_SUCCESS: {
             return {
                 ...state,
                 isLoggingOut: false,
                 me: null,
+            };
+        }
+        case SIGN_UP_REQUEST: {
+            return {
+                ...state,
+                isSigningUp: true,
+                isSignedUp: false,
+                signUpErrorReason: '',
             };
         }
         case SIGN_UP_SUCCESS: {
@@ -117,7 +110,7 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
             };
-          }
+        }
         case LOAD_USER_SUCCESS: {
             return {
                 ...state,

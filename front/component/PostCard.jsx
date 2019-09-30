@@ -13,7 +13,6 @@ const PostCard = ({ post }) => {
     const { me } = useSelector(state => state.user);
 
     const onToggleComment = useCallback(() => {
-        console.log(me);
         if(!me){
             return alert("로그인해야합니다.");
         }

@@ -1,49 +1,50 @@
-import { Menu, Input, Row, Col } from 'antd';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
+import PropTypes from 'prop-types';
+import { Col, Input, Menu, Row } from 'antd';
+import { useSelector, useDispatch } from 'react-redux';
 import LoginForm from './LoginForm';
 import UserProfile from './UserProfile';
-import { useSelector, useDispatch } from 'react-redux';
-import { useEffect } from 'react';
 import { LOAD_USER_REQUEST } from '../reducers/user';
 
 const AppLayout = ({ children }) => {
-    const { me  } = useSelector(state => state.user);
+    const { me } = useSelector(state => state.user);
     const dispatch = useDispatch();
-
     useEffect(() => {
-        if(!me){
+        if (!me) {
             dispatch({
-                type: LOAD_USER_REQUEST
+                type: LOAD_USER_REQUEST,
             });
         }
     }, []);
-    
+  
     return (
         <div>
             <Menu mode="horizontal">
-                <Menu.Item key="home"><Link href="/"><a>홈</a></Link></Menu.Item>
-                <Menu.Item key="profile"><Link href="/profile"><a>프로필</a></Link></Menu.Item>
-                <Menu.Item key="mail">
-                <Input.Search
+            <Menu.Item key="home"><Link href="/"><a>홈</a></Link></Menu.Item>
+            <Menu.Item key="profile"><Link href="/profile"><a>프로필</a></Link></Menu.Item>
+            <Menu.Item key="mail">
+            <Input.Search
                     placeholder="input search text"
                     onSearch={value => console.log(value)}
                     style={{ width: 200 }}
                     />
-                </Menu.Item>
+            </Menu.Item>
             </Menu>
             <Row gutter={8}>
-                <Col xs={24} md={6}>
-                    {me ? 
+            <Col xs={24} md={6}>
+            {me ? 
                     <UserProfile />
                     :
                     <LoginForm />
                     }
-                </Col>
-                <Col xs={24} md={12}>{children}</Col>
-                <Col xs={24} md={6}><Link href=""><a target="_black">아아아</a></Link></Col>
+            </Col>
+            <Col xs={24} md={12}>{children}</Col>
+            <Col xs={24} md={6}><Link href=""><a target="_black">아아아</a></Link></Col>
             </Row>
             
         </div>
     );
-}
+};
+
 export default AppLayout;
