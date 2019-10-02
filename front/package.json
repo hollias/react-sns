@@ -11,15 +11,16 @@
   "author": "Nsoo",
   "license": "MIT",
   "dependencies": {
-    "antd": "^3.20.5",
-    "next": "^9.0.5",
-    "next-redux-wrapper": "^3.0.0",
+    "antd": "^3.17.0",
+    "axios": "^0.18.0",
+    "next": "^8.1.0",
+    "next-redux-wrapper": "^3.0.0-alpha.2",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "react-redux": "^7.1.0",
-    "redux": "^4.0.4",
-    "redux-saga": "^1.0.5"
+    "react-redux": "^7.1.0-alpha.4",
+    "redux": "^4.0.1",
+    "redux-saga": "^1.0.2"
   },
   "devDependencies": {
     "eslint": "^6.2.1",
