@@ -2,24 +2,24 @@ const express = require('express');
 const router = express.Router();
 const db = require('../models');
 
-router.post('/', async (req, res) => {
+router.post('/', async (req, res, next) => {
     try {
         const hashtags = req.body.content.match(/#[^\s]+/g);
         const newPost = await db.Post.create({
             content: req.body.content,
-            userId: req.body.userId
+            UserId: req.user.id
         });
 
         if(hashtags){
             const result = await Promise.all(hashtags.map((tag) => {
-                db.Hashtag.findOrCreate({   //findOrCreate : 없으면 create 있으면 select
+                return db.Hashtag.findOrCreate({   //findOrCreate : 없으면 create 있으면 select
                     where : {
                         name: tag.slice(1).toLowerCase()
                     }
                 })
             }));
 
-            console.log(result);
+            console.log('result', result);
             await newPost.addHashtags(result.map(r => r[0]))
         }
         // const User = await newPost.getUser();
@@ -28,9 +28,11 @@ router.post('/', async (req, res) => {
         const fullPost = await db.Post.findOne({
             where: { id: newPost.id },
             include: [{
-            model: db.User,
+                model: db.User,
             }],
         });
+
+        console.log(fullPost);
         res.json(fullPost);
     } catch (e) {
         console.log(e);
