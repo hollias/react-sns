@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import Link from 'next/link';
 import { Card, Icon, Button, Avatar, Form, List, Input, Comment } from 'antd';
 import Meta from 'antd/lib/card/Meta';
 import PropTypes from 'prop-types';
@@ -53,7 +54,14 @@ const PostCard = ({ post }) => {
                 <Meta 
                     avatar={<Avatar>{post.User.nickname[0]}</Avatar>}
                     title={post.User.nickname}
-                    description={post.content}
+                    description={<div>{post.content.split(/(#[^\s]+)/g).map((v) => {
+                        if(v.match(/#[^\s]+/)){
+                            return (
+                                <Link href="/hashtag" key={v}><a>{v}</a></Link>
+                            )
+                        }
+                        return v;
+                    })}</div>}
                 />
             </Card>
             {commentFormOpened && (

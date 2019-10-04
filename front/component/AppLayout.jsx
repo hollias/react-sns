@@ -47,4 +47,8 @@ const AppLayout = ({ children }) => {
     );
 };
 
+AppLayout.propTypes = {
+    children: PropTypes.node,
+};
+
 export default AppLayout;

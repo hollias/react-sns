@@ -11,7 +11,6 @@ import { ADD_POST_REQUEST
     , LOAD_MAIN_POSTS_FAILURE} from '../reducers/post'
 
 function addPostAPI(postData){
-    debugger;
     return axios.post('/post', postData, {
         withCredentials: true
     });

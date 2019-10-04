@@ -4,11 +4,13 @@ import withRedux from 'next-redux-wrapper';
 import AppLayout from '../component/AppLayout';
 import { Provider } from 'react-redux';
 import { createStore, compose, applyMiddleware } from 'redux';
+import PropTypes from 'prop-types';
 import reducer from '../reducers';
 import createSagaMiddleware from '@redux-saga/core';
 import rootSaga from '../sagas';
 
-const _app = ({ Component, store }) => {
+const _app = ({ Component, store, pageProps }) => {
+    console.log('{...pageProps}', {...pageProps})
     return (
         <Provider store={store}>
             <Head>
@@ -16,11 +18,28 @@ const _app = ({ Component, store }) => {
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/3.21.4/antd.css"></link>
             </Head>  
             <AppLayout>
-                <Component />
+                <Component {...pageProps} />
             </AppLayout>
         </Provider>
     );
 };
+
+_app.propTypes = {
+    Component: PropTypes.elementType.isRequired,
+    store: PropTypes.object.isRequired,
+    pageProps: PropTypes.object.isRequired,
+};
+
+_app.getInitialProps = async(context) => {
+    const { ctx, Component } = context;
+    let pageProps = {};
+    if(Component.getInitialProps){
+        pageProps = await Component.getInitialProps(ctx);
+    }
+    console.log('pageProps', pageProps);
+    console.log('{ pageProps }', { pageProps });
+    return { pageProps };
+}
 
 const configureStrote = (initialState, options) => {
     
