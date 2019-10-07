@@ -10,7 +10,6 @@ import createSagaMiddleware from '@redux-saga/core';
 import rootSaga from '../sagas';
 
 const _app = ({ Component, store, pageProps }) => {
-    console.log('{...pageProps}', {...pageProps})
     return (
         <Provider store={store}>
             <Head>
@@ -36,8 +35,6 @@ _app.getInitialProps = async(context) => {
     if(Component.getInitialProps){
         pageProps = await Component.getInitialProps(ctx);
     }
-    console.log('pageProps', pageProps);
-    console.log('{ pageProps }', { pageProps });
     return { pageProps };
 }
 

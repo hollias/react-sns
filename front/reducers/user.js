@@ -112,10 +112,18 @@ const reducer = (state = initialState, action) => {
             };
         }
         case LOAD_USER_SUCCESS: {
-            return {
+            if(action.me){  //내정보 가져올때
+                return {
+                    ...state,
+                    me: action.data,
+                };
+            }
+
+            return {    //남의 정보 가져올때
                 ...state,
-                me: action.data,
-            };
+                userInfo: action.data,
+            }
+
         }
         case LOAD_USER_FAILURE: {
             return {
