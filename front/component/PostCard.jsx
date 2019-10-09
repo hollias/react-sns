@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Card, Icon, Button, Avatar, Form, List, Input, Comment } from 'antd';
 import Meta from 'antd/lib/card/Meta';
 import PropTypes from 'prop-types';
-import { ADD_COMMENT_REQUEST } from '../reducers/post';
+import { ADD_COMMENT_REQUEST, LOAD_COMMENTS_REQUEST } from '../reducers/post';
 
 const PostCard = ({ post }) => {
     const [commentFormOpened, setCommentFormOpened] = useState(false);
@@ -14,22 +14,30 @@ const PostCard = ({ post }) => {
     const { me } = useSelector(state => state.user);
 
     const onToggleComment = useCallback(() => {
-        if(!me){
-            return alert("로그인해야합니다.");
-        }
         setCommentFormOpened(prev => !prev);
-    }, [me && me.id]);
+        if(!commentFormOpened){
+            dispatch({
+                type: LOAD_COMMENTS_REQUEST,
+                data : post.id
+            });
+        }
+    }, [commentFormOpened]);
 
     const onSubmitComment = useCallback((e) => {
         e.preventDefault();
+        if(!me){
+            return alert('로그인이 필요합니다.');
+        }
+
         dispatch({
             type: ADD_COMMENT_REQUEST,
             data: {
                 postId: post.id,
+                content: commentText,
             }
         })
 
-    }, []);
+    }, [me && me.id, commentText]);
 
     const onChangeCommentText = useCallback((e) => {
         setCommentText(e.target.value);

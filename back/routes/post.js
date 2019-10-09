@@ -18,8 +18,6 @@ router.post('/', async (req, res, next) => {
                     }
                 })
             }));
-
-            console.log('result', result);
             await newPost.addHashtags(result.map(r => r[0]))
         }
         // const User = await newPost.getUser();
@@ -32,12 +30,76 @@ router.post('/', async (req, res, next) => {
             }],
         });
 
-        console.log(fullPost);
-        res.json(fullPost);
+        return res.json(fullPost);
     } catch (e) {
         console.log(e);
         next(e);
     }
-})
+});
+
+router.get('/:id/comments', async (req, res, next) => {
+    try {
+        const post = await db.Post.findOne({
+            where : {
+                id : req.params.id
+            }
+        });
+        if(!post){
+            return res.status(404).send('포스트가 존재하지 않습니다.');
+        }
+
+        const comments = await db.Comment.findAll({
+            where : {
+                PostId : post.id
+            },
+            order : [['createdAt', 'ASC']],
+            include : {
+                model : db.User,
+                attributes : ['id', 'nickname'],
+            }
+        });
+        return res.json(comments);
+    } catch (e) {
+        console.log(e);
+        next(e);
+    }
+});
+router.post('/:id/comment', async (req, res, next) => {
+    try {
+        if(!req.user){
+            return res.status(401).send('로그인이 필요합니다.');
+        }
+
+        const post = await db.Post.findOne({
+            where : {
+                id: req.params.id
+            }
+        });
+        if(!post){
+            return res.status(404).send('포스트가 존재하지 않습니다.');
+        }
+        const newCommnet = await db.Comment.create({
+            PostId: post.id,
+            UserId: req.user.id,
+            content: req.body.content,
+        });
+        await post.addComment(newCommnet.id);
+        
+        const comment = await db.Comment.findOne({
+            where: {
+                id: newCommnet.id
+            },
+            include: {
+                model : db.User,
+                attributes : ['id', 'nickname']
+            }
+        });
+
+        return res.json(comment);
+    } catch (e) {
+        console.log(e);
+        next(e);
+    }
+});
 
 module.exports = router;
