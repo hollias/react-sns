@@ -1,9 +1,13 @@
 const express = require('express');
 const router = express.Router();
+const { isLoggedIn } = require('./middleware');
 const db = require('../models');
 
-router.post('/', async (req, res, next) => {
+router.post('/', isLoggedIn , async (req, res, next) => {
     try {
+        // if(!req.user){   //middleware에서 공통처리
+        //     return res.status(401).send('로그인이 필요합니다.');
+        // }
         const hashtags = req.body.content.match(/#[^\s]+/g);
         const newPost = await db.Post.create({
             content: req.body.content,
@@ -64,11 +68,11 @@ router.get('/:id/comments', async (req, res, next) => {
         next(e);
     }
 });
-router.post('/:id/comment', async (req, res, next) => {
+router.post('/:id/comment', isLoggedIn, async (req, res, next) => {
     try {
-        if(!req.user){
-            return res.status(401).send('로그인이 필요합니다.');
-        }
+        // if(!req.user){
+        //     return res.status(401).send('로그인이 필요합니다.');
+        // }
 
         const post = await db.Post.findOne({
             where : {
