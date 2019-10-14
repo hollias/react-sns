@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const { isLoggedIn } = require('./middleware');
 const db = require('../models');
+const multer = require('multer');
+const path = require('path');
 
 router.post('/', isLoggedIn , async (req, res, next) => {
     try {
@@ -104,6 +106,32 @@ router.post('/:id/comment', isLoggedIn, async (req, res, next) => {
         console.log(e);
         next(e);
     }
+});
+
+const upload = multer({
+    storage: multer.diskStorage({
+        destination(req, file, done){
+            done(null, 'uploads');  //passport의 사용법과 비슷 앞의 파라메터는 실패했을때 뒤에것은 성공했을때
+        },
+        filename(req, file, done){
+            const ext = path.extname(file.originalname);
+            const basename = path.basename(file.originalname, ext);
+            done(null, basename + new Date().valueOf() + ext);
+        },
+        limits: {   //업로드시 제한하는곳, 추가적으로 파일 업로드 갯수등 multer의 사이트에서 확인
+            fileSize: 20* 1024 * 1024
+        }
+    })
+});
+
+//upload.array 이미지 여러개 올릴때
+//upload.single 이미지 한개만 올릴때
+//upload.fields front에서 보내주는 FormData의 key값이 다를때 
+//upload.none 이미지를 하나도 올리지 않을때
+//parameter 는 front에서 보내주는 formdata의 키값
+router.post('/images', upload.array('image'), (req, res) => {
+    console.log(req.files);
+    res.json(req.files.map(v => v.filename));
 });
 
 module.exports = router;

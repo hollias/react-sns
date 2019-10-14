@@ -21,6 +21,7 @@ db.sequelize.sync();
 passportConfig();
 
 app.use(morgan('dev')); //log
+app.use('/', express.static('uploads'));    //첫번째 파라메터는 front에서 접근하는 주소 두번째는 back에서 실제 주소
 app.use(express.json());
 app.use(express.urlencoded({ extended: true}));
 app.use(cors({
@@ -46,6 +47,6 @@ app.use('/api/post', postAPIRouter);
 app.use('/api/posts', postsAPIRouter);
 app.use('/api/hashtag', hashtagAPIRouter);
 
-app.listen(8080, () => {
-    console.log('server is running on http://localhost:8080');
+app.listen(3030, () => {
+    console.log('server is running on http://localhost:3030');
 });
