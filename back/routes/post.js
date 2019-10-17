@@ -5,7 +5,23 @@ const db = require('../models');
 const multer = require('multer');
 const path = require('path');
 
-router.post('/', isLoggedIn , async (req, res, next) => {
+const upload = multer({
+    storage: multer.diskStorage({
+        destination(req, file, done){
+            done(null, 'uploads');  //passport의 사용법과 비슷 앞의 파라메터는 실패했을때 뒤에것은 성공했을때
+        },
+        filename(req, file, done){
+            const ext = path.extname(file.originalname);
+            const basename = path.basename(file.originalname, ext);
+            done(null, basename + new Date().valueOf() + ext);
+        },
+        limits: {   //업로드시 제한하는곳, 추가적으로 파일 업로드 갯수등 multer의 사이트에서 확인
+            fileSize: 20* 1024 * 1024
+        }
+    })
+});
+
+router.post('/', isLoggedIn, upload.none() , async (req, res, next) => {
     try {
         // if(!req.user){   //middleware에서 공통처리
         //     return res.status(401).send('로그인이 필요합니다.');
@@ -26,6 +42,18 @@ router.post('/', isLoggedIn , async (req, res, next) => {
             }));
             await newPost.addHashtags(result.map(r => r[0]))
         }
+        if(req.body.image){
+            if(Array.isArray(req.body.image)){  //multer가 formdata를 가져올때 여러개를 올리면 image: [주소1, 주소2] 식의 배열로
+                const images = await Promise.all(req.body.image.map((image) => {
+                    return db.Image.create({ src: image });
+                }));
+                await newPost.addImages(images);
+            } else {    ////multer가 formdata를 가져올때 한개를 올리면 image: 주소1 식의 문자로
+                const image = await db.Image.create({ src: req.body.image });
+                await newPost.addImage(image);
+            }
+        }
+
         // const User = await newPost.getUser();
         // newPost.User = User;
         // res.json(newPost);
@@ -33,6 +61,8 @@ router.post('/', isLoggedIn , async (req, res, next) => {
             where: { id: newPost.id },
             include: [{
                 model: db.User,
+            }, {
+                model: db.Image,
             }],
         });
 
@@ -106,22 +136,6 @@ router.post('/:id/comment', isLoggedIn, async (req, res, next) => {
         console.log(e);
         next(e);
     }
-});
-
-const upload = multer({
-    storage: multer.diskStorage({
-        destination(req, file, done){
-            done(null, 'uploads');  //passport의 사용법과 비슷 앞의 파라메터는 실패했을때 뒤에것은 성공했을때
-        },
-        filename(req, file, done){
-            const ext = path.extname(file.originalname);
-            const basename = path.basename(file.originalname, ext);
-            done(null, basename + new Date().valueOf() + ext);
-        },
-        limits: {   //업로드시 제한하는곳, 추가적으로 파일 업로드 갯수등 multer의 사이트에서 확인
-            fileSize: 20* 1024 * 1024
-        }
-    })
 });
 
 //upload.array 이미지 여러개 올릴때

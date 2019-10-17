@@ -70,6 +70,7 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 isAddingPost: false,
                 mainPosts: [action.data, ...state.mainPosts],
+                imagePaths : [],
                 postAdded: true,
             };
         }
@@ -94,6 +95,12 @@ const reducer = (state = initialState, action) => {
         case UPLOAD_IMAGES_FAILURE: {
             return {
                 ...state,
+            };
+        }
+        case REMOVE_IMAGE: {
+            return {
+                ...state,
+                imagePaths: state.imagePaths.filter((v, i) => { return i !== action.index })
             };
         }
         case ADD_COMMENT_REQUEST: {

@@ -5,6 +5,7 @@ import { Card, Icon, Button, Avatar, Form, List, Input, Comment } from 'antd';
 import Meta from 'antd/lib/card/Meta';
 import PropTypes from 'prop-types';
 import { ADD_COMMENT_REQUEST, LOAD_COMMENTS_REQUEST } from '../reducers/post';
+import PostImages from './PostImages';
 
 const PostCard = ({ post }) => {
     const [commentFormOpened, setCommentFormOpened] = useState(false);
@@ -51,7 +52,7 @@ const PostCard = ({ post }) => {
         <div>
             <Card 
                 key={+post.createdAt}
-                cover={post.img && <img alt="example" src={post.img} />}
+                cover={post.Images[0] && <PostImages images={post.Images}/>}
                 actions={[
                     <Icon key="retweet" type="retweet"/>,
                     <Icon key="heart" type="heart"/>,
@@ -65,7 +66,11 @@ const PostCard = ({ post }) => {
                     description={<div>{post.content.split(/(#[^\s]+)/g).map((v) => {
                         if(v.match(/#[^\s]+/)){
                             return (
-                                <Link href={{ pathname: '/hashtag', query:{ tag: v.slice(1)}}} as={`/hashtag/${v.slice(1)}`} key={v}><a>{v}</a></Link>
+                                <Link 
+                                    href={{ pathname: '/hashtag', query:{ tag: v.slice(1)}}} 
+                                    as={`/hashtag/${v.slice(1)}`} 
+                                    key={v}><a>{v}</a>
+                                </Link>
                             )
                         }
                         return v;
