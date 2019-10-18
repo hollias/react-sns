@@ -134,7 +134,6 @@ router.delete('/:id/follower', (req, res) => {
 });
 
 router.get('/:id/posts', async (req, res, next) => {
-    console.log('/:id/posts start');
     try {
         const posts = await db.Post.findAll({
             where: {
@@ -146,10 +145,14 @@ router.get('/:id/posts', async (req, res, next) => {
                 attributes: ['id', 'nickname']
             }, {
                 model: db.Image
+            }, {
+                model: db.User,
+                through: 'Like',
+                as: 'Likers',
+                attributes: ['id']
             }]
         });
 
-        console.log('/:id/posts end', posts);
         res.json(posts);
     } catch (e) {
         console.log(e);

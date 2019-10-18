@@ -68,7 +68,7 @@ router.post('/', isLoggedIn, upload.none() , async (req, res, next) => {
 
         return res.json(fullPost);
     } catch (e) {
-        console.log(e);
+        console.error(e);
         next(e);
     }
 });
@@ -96,7 +96,7 @@ router.get('/:id/comments', async (req, res, next) => {
         });
         return res.json(comments);
     } catch (e) {
-        console.log(e);
+        console.error(e);
         next(e);
     }
 });
@@ -133,7 +133,7 @@ router.post('/:id/comment', isLoggedIn, async (req, res, next) => {
 
         return res.json(comment);
     } catch (e) {
-        console.log(e);
+        console.error(e);
         next(e);
     }
 });
@@ -146,6 +146,51 @@ router.post('/:id/comment', isLoggedIn, async (req, res, next) => {
 router.post('/images', upload.array('image'), (req, res) => {
     console.log(req.files);
     res.json(req.files.map(v => v.filename));
+});
+
+router.post('/:postId/like', isLoggedIn, async (req, res, next) => {
+    console.log('req.params.postId', req.params.postId)
+    try {
+        const post = await db.Post.findOne({
+            where: {
+                id : req.params.postId
+            }
+        });
+
+        if(!post){
+            res.status(404).send('포스트가 존재하지 않습니다.');
+        }
+
+        await post.addLiker(req.user.id);
+        res.json({
+            userId: req.user.id
+        })
+    } catch (e) {
+        console.error(e);
+        next(e);
+    }
+});
+
+router.delete('/:postId/like', isLoggedIn, async (req, res, next) => {
+    try {
+        const post = await db.Post.findOne({
+            where: {
+                id : req.params.postId
+            }
+        });
+
+        if(!post){
+            res.status(404).send('포스트가 존재하지 않습니다.');
+        }
+
+        await post.removeLiker(req.user.id);
+        res.json({
+            userId: req.user.id
+        })
+    } catch (e) {
+        console.error(e);
+        next(e);
+    }
 });
 
 module.exports = router;

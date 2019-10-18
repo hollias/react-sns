@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Card, Icon, Button, Avatar, Form, List, Input, Comment } from 'antd';
 import Meta from 'antd/lib/card/Meta';
 import PropTypes from 'prop-types';
-import { ADD_COMMENT_REQUEST, LOAD_COMMENTS_REQUEST } from '../reducers/post';
+import { ADD_COMMENT_REQUEST, LOAD_COMMENTS_REQUEST, UNLIKE_POST_REQUEST, LIKE_POST_REQUEST } from '../reducers/post';
 import PostImages from './PostImages';
 
 const PostCard = ({ post }) => {
@@ -13,6 +13,8 @@ const PostCard = ({ post }) => {
     const dispatch = useDispatch();
     const { isAddingComment, commentAdded } = useSelector(state => state.post);
     const { me } = useSelector(state => state.user);
+
+    const liked = me && post.Likers && post.Likers.find(v => v.id === me.id)
 
     const onToggleComment = useCallback(() => {
         setCommentFormOpened(prev => !prev);
@@ -48,6 +50,24 @@ const PostCard = ({ post }) => {
         if(commentAdded === true)    setCommentText('');
     }, [commentAdded]);
 
+    const onToggleLike = useCallback(() => {
+        if(!me){
+            return alert('로그인이 필요합니다.');
+        }
+
+        if(liked){
+            return dispatch({
+                type: UNLIKE_POST_REQUEST,
+                data: post.id
+            })
+        } else {
+            return dispatch({
+                type: LIKE_POST_REQUEST,
+                data: post.id
+            })
+        }
+    }, [me && me.id, post && post.id, liked]);
+
     return (
         <div>
             <Card 
@@ -55,7 +75,7 @@ const PostCard = ({ post }) => {
                 cover={post.Images[0] && <PostImages images={post.Images}/>}
                 actions={[
                     <Icon key="retweet" type="retweet"/>,
-                    <Icon key="heart" type="heart"/>,
+                    <Icon key="heart" type="heart" onClick={onToggleLike} theme={liked ? 'twoTone' : 'outlined'} twoToneColor="#eb2f96"/>,
                     <Icon key="message" type="message" onClick={onToggleComment} />,
                     <Icon key="ellipsis" type="ellipsis"/>,
                 ]}
