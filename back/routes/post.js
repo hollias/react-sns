@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { isLoggedIn } = require('./middleware');
+const { isLoggedIn, isExistPost } = require('./middleware');
 const db = require('../models');
 const multer = require('multer');
 const path = require('path');
@@ -144,12 +144,10 @@ router.post('/:id/comment', isLoggedIn, async (req, res, next) => {
 //upload.none 이미지를 하나도 올리지 않을때
 //parameter 는 front에서 보내주는 formdata의 키값
 router.post('/images', upload.array('image'), (req, res) => {
-    console.log(req.files);
     res.json(req.files.map(v => v.filename));
 });
 
 router.post('/:postId/like', isLoggedIn, async (req, res, next) => {
-    console.log('req.params.postId', req.params.postId)
     try {
         const post = await db.Post.findOne({
             where: {
@@ -187,6 +185,65 @@ router.delete('/:postId/like', isLoggedIn, async (req, res, next) => {
         res.json({
             userId: req.user.id
         })
+    } catch (e) {
+        console.error(e);
+        next(e);
+    }
+});
+
+router.post('/:postId/retweet', isLoggedIn, async (req, res, next) => {
+    try {
+        const post = await db.Post.findOne({
+            where: {
+                id : req.params.postId
+            }
+        });
+
+        if(!post){
+            res.status(404).send('포스트가 존재하지 않습니다.');
+        }
+
+        if(req.user.id === post.UserId){
+            res.status(403).send('자신의 글은 리트윗할 수 없습니다.')
+        }
+
+        const retweetTargetId = post.RetweetId || post.id
+        const exPost = await db.Post.findOne({
+            where: {
+                userId : req.user.id,
+                retweetId : retweetTargetId,
+            }
+        })
+        if(exPost){
+            return res.status(403).send('이미 리트윗했습니다.');
+        }
+        
+        const retweet = await db.Post.create({
+            UserId: req.user.id,
+            RetweetId: retweetTargetId,
+            content: 'retweet'
+        });
+
+        const reteetWithPrevPost = await db.Post.findOne({
+            where: {
+                id: retweet.id
+            },
+            include: [{
+                model: db.User,
+                attributes: ['id','nickname']
+            }, {
+                model: db.Post,
+                as: 'Retweet',
+                include: [{
+                    model:db.User,
+                    attributes: ['id','nickname']
+                }, {
+                    model: db.Image
+                }]
+            }]
+        });
+
+        res.json(reteetWithPrevPost);
     } catch (e) {
         console.error(e);
         next(e);

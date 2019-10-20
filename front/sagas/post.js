@@ -26,7 +26,10 @@ import { ADD_POST_REQUEST,
     LIKE_POST_SUCCESS,
     UNLIKE_POST_SUCCESS,
     UNLIKE_POST_FAILURE,
-    UNLIKE_POST_REQUEST} from '../reducers/post'
+    UNLIKE_POST_REQUEST,
+    RETWEET_SUCCESS,
+    RETWEET_FAILURE,
+    RETWEET_REQUEST} from '../reducers/post'
 
 function addPostAPI(postData){
     return axios.post('/post', postData, {
@@ -254,6 +257,33 @@ function* watchUnlikePost(){
     yield takeLatest(UNLIKE_POST_REQUEST, unlikePost);
 }
 
+function RetweetAPI(postId){
+    return axios.post(`/post/${postId}/retweet`, {}, {
+        withCredentials: true,
+    });
+}
+function* Retweet(action) {
+    try {
+        const result = yield call(RetweetAPI, action.data);
+        console.log(result);
+        yield put({
+            type: RETWEET_SUCCESS,
+            data: result.data
+        });
+    } catch (e) {
+        console.error(e);
+        yield put({
+            type : RETWEET_FAILURE,
+            error : e
+        })
+        alert(e.response && e.response.data);
+    }
+}
+
+function* watchRetweet(){
+    yield takeLatest(RETWEET_REQUEST, Retweet);
+}
+
 export default function* postSaga(){
     yield all([
         fork(watchAddPost),
@@ -265,5 +295,6 @@ export default function* postSaga(){
         fork(watchUploadImages),
         fork(watchLikePost),
         fork(watchUnlikePost),
+        fork(watchRetweet),
     ]);
 }
