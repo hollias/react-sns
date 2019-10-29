@@ -1,7 +1,10 @@
 const express = require('express');
 const router = express.Router();
 
-const { isLoggedIn, isExistPost } = require('./middleware');
+const {
+    isLoggedIn,
+    isExistPost
+} = require('./middleware');
 const db = require('../models');
 const multer = require('multer');
 const path = require('path');
@@ -204,29 +207,33 @@ router.post('/:postId/retweet', isLoggedIn, async (req, res, next) => {
     try {
         const post = await db.Post.findOne({
             where: {
-                id : req.params.postId
-            }
+                id: req.params.postId
+            },
+            include: [{
+                model: db.Post,
+                as: 'Retweet',
+            }],
         });
 
-        if(!post){
+        if (!post) {
             res.status(404).send('포스트가 존재하지 않습니다.');
         }
 
-        if(req.user.id === post.UserId){
+        if (req.user.id === post.UserId || (post.Retweet && post.Retweet.UserId === req.user.id)) {
             res.status(403).send('자신의 글은 리트윗할 수 없습니다.')
         }
 
         const retweetTargetId = post.RetweetId || post.id
         const exPost = await db.Post.findOne({
             where: {
-                userId : req.user.id,
-                retweetId : retweetTargetId,
+                userId: req.user.id,
+                retweetId: retweetTargetId,
             }
         })
-        if(exPost){
+        if (exPost) {
             return res.status(403).send('이미 리트윗했습니다.');
         }
-        
+
         const retweet = await db.Post.create({
             UserId: req.user.id,
             RetweetId: retweetTargetId,
@@ -239,13 +246,13 @@ router.post('/:postId/retweet', isLoggedIn, async (req, res, next) => {
             },
             include: [{
                 model: db.User,
-                attributes: ['id','nickname']
+                attributes: ['id', 'nickname']
             }, {
                 model: db.Post,
                 as: 'Retweet',
                 include: [{
-                    model:db.User,
-                    attributes: ['id','nickname']
+                    model: db.User,
+                    attributes: ['id', 'nickname']
                 }, {
                     model: db.Image
                 }]

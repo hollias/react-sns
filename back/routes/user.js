@@ -119,12 +119,34 @@ router.post('/login', (req, res, next) => {
         })
     })(req, res, next);
 });
-router.post('/:id/follow', (req, res) => {
-
+router.post('/:id/follow', isLoggedIn, async (req, res, next) => {
+    try {
+        const me = await db.User.findOne({
+            where: {
+                id: req.user.id
+            }
+        });
+        await me.addFollowing(req.params.id);
+        res.send(req.params.id);
+    } catch (e) {
+        console.log(e);
+        next(e);
+    }
 });
 
-router.delete('/:id/follow', (req, res) => {
-
+router.delete('/:id/unfollow', isLoggedIn, async (req, res, next) => {
+    try {
+        const me = await db.User.findOne({
+            where: {
+                id: req.user.id
+            }
+        });
+        await me.removeFollowing(req.params.id);
+        res.send(req.params.id);
+    } catch (e) {
+        console.log(e);
+        next(e);
+    }
 });
 router.post('/:id/follower', (req, res) => {
 

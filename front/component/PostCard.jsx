@@ -6,6 +6,8 @@ import Meta from 'antd/lib/card/Meta';
 import PropTypes from 'prop-types';
 import { ADD_COMMENT_REQUEST, LOAD_COMMENTS_REQUEST, UNLIKE_POST_REQUEST, LIKE_POST_REQUEST, RETWEET_REQUEST } from '../reducers/post';
 import PostImages from './PostImages';
+import PostCardContent from './PostCardContent';
+import { UNFOLLOW_USER_REQUEST, FOLLOW_USER_REQUEST } from '../reducers/user';
 
 const PostCard = ({ post }) => {
     const [commentFormOpened, setCommentFormOpened] = useState(false);
@@ -78,36 +80,73 @@ const PostCard = ({ post }) => {
             type: RETWEET_REQUEST,
             data: post.id
         })
-    }, [me && me.id]);
+    }, [me && me.id, post && post.id]);
+
+    const onUnfollow = useCallback(userId => () => {
+        return dispatch({
+            type: UNFOLLOW_USER_REQUEST,
+            data: userId
+        });
+    }, []);
+    const onFollow = useCallback(userId => () => {
+        return dispatch({
+            type: FOLLOW_USER_REQUEST,
+            data: userId
+        });
+    }, []);
+
+    console.log(me)
 
     return (
         <div>
             <Card 
                 key={+post.createdAt}
-                cover={post.Images[0] && <PostImages images={post.Images}/>}
+                cover={post.Images && post.Images[0] && <PostImages images={post.Images} />}
                 actions={[
                     <Icon key="retweet" type="retweet" onClick={onRetweet}/>,
                     <Icon key="heart" type="heart" onClick={onToggleLike} theme={liked ? 'twoTone' : 'outlined'} twoToneColor="#eb2f96"/>,
                     <Icon key="message" type="message" onClick={onToggleComment} />,
                     <Icon key="ellipsis" type="ellipsis"/>,
                 ]}
-                extra={<Button>팔로우</Button>}>
-                <Meta 
-                    avatar={<Link href={{ pathname: '/user', query: {id:post.User.id} }} as={`/user/${post.User.id}`}><a><Avatar>{post.User.nickname[0]}</Avatar></a></Link>}
+                title={post.RetweetId ? `${post.User.nickname}님이 리트윗하셨습니다.` : null}
+                extra={!me || post.User.id === me.id
+                    ? null : me.Followings && me.Followings.find(v => {
+                        return v.id === post.User.id   
+                    })
+                        ? <Button onClick={onUnfollow(post.User.id)}>팔로우 취소</Button> 
+                        : <Button onClick={onFollow(post.User.id)}>팔로우</Button>
+                }>
+                {post.RetweetId && post.Retweet
+                ? (
+                    <Card
+                        cover={post.Retweet.Images[0] && <PostImages images={post.Retweet.Images} />}
+                    >
+                    <Card.Meta
+                        avatar={(
+                        <Link
+                            href={{ pathname: '/user', query: { id: post.Retweet.User.id } }}
+                            as={`/user/${post.Retweet.User.id}`}
+                        >
+                            <a><Avatar>{post.Retweet.User.nickname[0]}</Avatar></a>
+                        </Link>
+                        )}
+                        title={post.Retweet.User.nickname}
+                        description={<PostCardContent postData={post.Retweet.content} />} // a tag x -> Link
+                    />
+                    </Card>
+                )
+                : (
+                    <Card.Meta
+                    avatar={(
+                        <Link href={{ pathname: '/user', query: { id: post.User.id } }} as={`/user/${post.User.id}`}>
+                        <a><Avatar>{post.User.nickname[0]}</Avatar></a>
+                        </Link>
+                    )}
                     title={post.User.nickname}
-                    description={<div>{post.content.split(/(#[^\s]+)/g).map((v) => {
-                        if(v.match(/#[^\s]+/)){
-                            return (
-                                <Link 
-                                    href={{ pathname: '/hashtag', query:{ tag: v.slice(1)}}} 
-                                    as={`/hashtag/${v.slice(1)}`} 
-                                    key={v}><a>{v}</a>
-                                </Link>
-                            )
-                        }
-                        return v;
-                    })}</div>}
-                />
+                    description={<PostCardContent postData={post.content} />} // a tag x -> Link
+                    />
+                )}
+                
             </Card>
             {commentFormOpened && (
                 <>
