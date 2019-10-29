@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Card, Icon, Button, Avatar, Form, List, Input, Comment } from 'antd';
 import Meta from 'antd/lib/card/Meta';
 import PropTypes from 'prop-types';
-import { ADD_COMMENT_REQUEST, LOAD_COMMENTS_REQUEST, UNLIKE_POST_REQUEST, LIKE_POST_REQUEST } from '../reducers/post';
+import { ADD_COMMENT_REQUEST, LOAD_COMMENTS_REQUEST, UNLIKE_POST_REQUEST, LIKE_POST_REQUEST, RETWEET_REQUEST } from '../reducers/post';
 import PostImages from './PostImages';
 
 const PostCard = ({ post }) => {
@@ -68,13 +68,25 @@ const PostCard = ({ post }) => {
         }
     }, [me && me.id, post && post.id, liked]);
 
+    const onRetweet = useCallback(() => {
+        if(!me){
+            console.log('retweet?', me)
+            return alert('로그인이 필요합니다.');
+        }
+
+        return dispatch({
+            type: RETWEET_REQUEST,
+            data: post.id
+        })
+    }, [me && me.id]);
+
     return (
         <div>
             <Card 
                 key={+post.createdAt}
                 cover={post.Images[0] && <PostImages images={post.Images}/>}
                 actions={[
-                    <Icon key="retweet" type="retweet"/>,
+                    <Icon key="retweet" type="retweet" onClick={onRetweet}/>,
                     <Icon key="heart" type="heart" onClick={onToggleLike} theme={liked ? 'twoTone' : 'outlined'} twoToneColor="#eb2f96"/>,
                     <Icon key="message" type="message" onClick={onToggleComment} />,
                     <Icon key="ellipsis" type="ellipsis"/>,

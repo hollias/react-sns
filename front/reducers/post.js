@@ -178,6 +178,22 @@ const reducer = (state = initialState, action) => {
                 ...state,
             };
         }
+        case RETWEET_REQUEST: {
+            return {
+                ...state,
+            };
+        }
+        case RETWEET_SUCCESS: {
+            return {
+                ...state,
+                mainPosts: [action.data, ...state.mainPosts],
+            };
+        }
+        case RETWEET_FAILURE: {
+            return {
+                ...state,
+            };
+        }
         case LOAD_HASHTAG_POSTS_REQUEST: 
         case LOAD_USER_POSTS_REQUEST: 
         case LOAD_MAIN_POSTS_REQUEST: {
