@@ -95,8 +95,6 @@ const PostCard = ({ post }) => {
         });
     }, []);
 
-    console.log(me)
-
     return (
         <div>
             <Card 
