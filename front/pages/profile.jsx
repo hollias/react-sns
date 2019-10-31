@@ -69,21 +69,21 @@ const Profile = () => {
 };
 
 Profile.getInitialProps = async (context) => {
-    const me = context.store.getState();
-    console.log('me!!!',me);
-    if(me){
-        context.store.dispatch({
-            type: LOAD_FOLLOWERS_REQUEST,
-            data: me.id,
-        });
-        context.store.dispatch({
-            type: LOAD_FOLLOWINGS_REQUEST,
-            data: me.id,
-        });
-        context.store.dispatch({
-            type: LOAD_USER_POSTS_REQUEST,
-            data: me.id,
-        });
-    }
+    const me = context.store.getState().user.me;
+    //이부분에서 _app 에서 dispatch한 LOAD_USER_REQUEST 실행
+    context.store.dispatch({
+        type: LOAD_FOLLOWERS_REQUEST,
+        data: me && me.id,
+    });
+    context.store.dispatch({
+        type: LOAD_FOLLOWINGS_REQUEST,
+        data: me && me.id,
+    });
+    context.store.dispatch({
+        type: LOAD_USER_POSTS_REQUEST,
+        data: me && me.id,
+    });
+
+    //이부분에서 LOAD_USER_SUCCESS 가 실행되기때문에 me가 null 인상태
 }
 export default Profile;

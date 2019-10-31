@@ -81,6 +81,22 @@ const reducer = (state = initialState, action) => {
                 addPostErrorReason: action.error,
             };
         }
+        case REMOVE_POST_REQUEST: {
+            return {
+                ...state,
+            };
+        }
+        case REMOVE_POST_SUCCESS: {
+            return {
+                ...state,
+                mainPosts: state.mainPosts.filter(v => v.id !== action.data)
+            };
+        }
+        case REMOVE_POST_FAILURE: {
+            return {
+                ...state,
+            };
+        }
         case UPLOAD_IMAGES_REQUEST: {
             return {
                 ...state,
