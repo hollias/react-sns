@@ -7,20 +7,9 @@ import PostCard from '../component/PostCard';
 import { Card, Avatar } from 'antd';
 
 const User = ({ id }) => {
-    const dispatch = useDispatch();
     const { mainPosts } = useSelector(state => state.post);
     const { userInfo } = useSelector(state => state.user);
 
-    useEffect(() => {
-        dispatch({
-            type: LOAD_USER_REQUEST,
-            data: id,
-        });
-        dispatch({
-            type: LOAD_USER_POSTS_REQUEST,
-            data: id,
-        });
-    }, []);
     return (
         <div>
         {userInfo ? (
@@ -57,13 +46,22 @@ const User = ({ id }) => {
 }
 
 User.propTypes = {
-    id: PropTypes.string.isRequired,
+    id: PropTypes.number.isRequired,
 };
 
 User.getInitialProps = async(context) => {
-    console.log('User getInitialProps', context.query.id);
+    const id = parseInt(context.query.id, 10);
+    console.log('User getInitialProps', id);
+    context.store.dispatch({
+        type: LOAD_USER_REQUEST,
+        data: id,
+    });
+    context.store.dispatch({
+        type: LOAD_USER_POSTS_REQUEST,
+        data: id,
+    });
     return {
-        id: context.query.id
+        id
     }
 }
 

@@ -33,8 +33,8 @@ import {
 function loginAPI(loginData) {
         // 서버에 요청을 보내는 부분
         return axios.post('/user/login', loginData, {
-            withCredentials: true,  //cookie를 주고 받기 위한 설정
-        });
+            withCredentials: true,  //cookie를 주고 받기 위한 설정  //클라이언트에서 요청을 보낼때는 블라우저가 쿠키를 같이 동봉해줌
+        });                                                         //서버사이드랜더링일 때는 브라우져가 없음 그래서 내가 넣어야함.
     }
     
     function* login(action) {

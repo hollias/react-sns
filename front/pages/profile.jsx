@@ -7,25 +7,8 @@ import { LOAD_USER_POSTS_REQUEST } from '../reducers/post';
 import PostCard from '../component/PostCard';
 
 const Profile = () => {
-    const dispatch = useDispatch();
     const { me, followingList, followerList } = useSelector(state => state.user);
     const { mainPosts } = useSelector(state => state.post);
-    useEffect(() => {
-        if(me){
-            dispatch({
-                type: LOAD_FOLLOWERS_REQUEST,
-                data: me.id,
-            });
-            dispatch({
-                type: LOAD_FOLLOWINGS_REQUEST,
-                data: me.id,
-            });
-            dispatch({
-                type: LOAD_USER_POSTS_REQUEST,
-                data: me.id,
-            });
-        }
-    }, [me && me.id]);
 
     const onUnfollow = useCallback(userId => () =>{
         dispatch({
@@ -85,4 +68,22 @@ const Profile = () => {
     );
 };
 
+Profile.getInitialProps = async (context) => {
+    const me = context.store.getState();
+    console.log('me!!!',me);
+    if(me){
+        context.store.dispatch({
+            type: LOAD_FOLLOWERS_REQUEST,
+            data: me.id,
+        });
+        context.store.dispatch({
+            type: LOAD_FOLLOWINGS_REQUEST,
+            data: me.id,
+        });
+        context.store.dispatch({
+            type: LOAD_USER_POSTS_REQUEST,
+            data: me.id,
+        });
+    }
+}
 export default Profile;

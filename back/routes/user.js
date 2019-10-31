@@ -200,6 +200,7 @@ router.delete('/:id/follower', isLoggedIn, async (req, res, next) => {
 });
 
 router.get('/:id/posts', async (req, res, next) => {
+    console.log('userID' , req.params.id);
     try {
         const posts = await db.Post.findAll({
             where: {
