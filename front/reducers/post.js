@@ -210,14 +210,6 @@ const reducer = (state = initialState, action) => {
                 ...state,
             };
         }
-        case LOAD_HASHTAG_POSTS_REQUEST: 
-        case LOAD_USER_POSTS_REQUEST: 
-        case LOAD_MAIN_POSTS_REQUEST: {
-            return {
-                ...state,
-                mainPosts: [],
-            };
-        }
         case LOAD_COMMENTS_SUCCESS: {
             const postIndex = state.mainPosts.findIndex(v => v.id === action.data.postId);
             const post = state.mainPosts[postIndex];
@@ -229,12 +221,20 @@ const reducer = (state = initialState, action) => {
                 mainPosts,
             };
         }
+        case LOAD_HASHTAG_POSTS_REQUEST: 
+        case LOAD_USER_POSTS_REQUEST: 
+        case LOAD_MAIN_POSTS_REQUEST: {
+            return {
+                ...state,
+                mainPosts: action.lastId ? [] : state.mainPosts,
+            };
+        }
         case LOAD_HASHTAG_POSTS_SUCCESS: 
         case LOAD_USER_POSTS_SUCCESS: 
         case LOAD_MAIN_POSTS_SUCCESS: {
             return {
                 ...state,
-                mainPosts : action.data
+                mainPosts : state.mainPosts.concat(action.data)
             };
         }
         case LOAD_HASHTAG_POSTS_FAILURE: 

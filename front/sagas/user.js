@@ -28,6 +28,7 @@ import {
     EDIT_NICKNAME_REQUEST,
     EDIT_NICKNAME_SUCCESS,
     EDIT_NICKNAME_FAILURE,
+    LOAD_FOLLOWERS_SUCCESS,
   } from '../reducers/user';
 
 function loginAPI(loginData) {
@@ -170,7 +171,7 @@ function loginAPI(loginData) {
     
     function* unfollowUser(action) {
         try {
-            const result = yield call(unfollowUserAPI, action.data);
+            const result = yield call(unfollowUserAPI, action.data, action.offset);
             yield put({ // put은 dispatch 동일
                 type: UNFOLLOW_USER_SUCCESS,
                 data: result.data,
@@ -188,18 +189,18 @@ function loginAPI(loginData) {
         yield takeEvery(UNFOLLOW_USER_REQUEST, unfollowUser);
     }
 
-    function loadFollowersAPI(userId) {
+    function loadFollowersAPI(userId, offset = 0, limit = 3) {
         // 서버에 요청을 보내는 부분
-        return axios.get(`/user/${userId || 0}/followers`, {
+        return axios.get(`/user/${userId || 0}/followers?offset=${offset}&limit=${limit}`, {
             withCredentials: true
         });
     }
     
     function* loadFollowers(action) {
         try {
-            const result = yield call(loadFollowersAPI, action.data);
+            const result = yield call(loadFollowersAPI, action.data, action.offset);
             yield put({ // put은 dispatch 동일
-                type: LOAD_FOLLOWINGS_SUCCESS,
+                type: LOAD_FOLLOWERS_SUCCESS,
                 data: result.data,
             });
         } catch (e) { 
@@ -215,16 +216,16 @@ function loginAPI(loginData) {
         yield takeEvery(LOAD_FOLLOWERS_REQUEST, loadFollowers);
     }
 
-    function loadFollowingsAPI(userId) {
+    function loadFollowingsAPI(userId, offset = 0, limit = 3) {
         // 서버에 요청을 보내는 부분
-        return axios.get(`/user/${userId || 0}/followings`, {
+        return axios.get(`/user/${userId || 0}/followings?offset=${offset}&limit=${limit}`, {
             withCredentials: true
         });
     }
     
     function* loadFollowings(action) {
         try {
-            const result = yield call(loadFollowingsAPI, action.data);
+            const result = yield call(loadFollowingsAPI, action.data, action.offset);
             yield put({ // put은 dispatch 동일
                 type: LOAD_FOLLOWINGS_SUCCESS,
                 data: result.data,

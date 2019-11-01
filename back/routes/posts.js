@@ -4,7 +4,17 @@ const db = require('../models');
 
 router.get('/', async (req, res) => {
     try {
+        let where = {};
+        if(parseInt(req.query.lastId, 10)){
+            where = {
+                id: {
+                    [db.Sequelize.Op.lt]: parseInt(req.query.lastId, 10)
+                }
+            }
+        }
         const posts = await db.Post.findAll({
+            where,
+            limit: parseInt(req.query.limit, 10),
             include: [{
                 model: db.User,
                 attributes: ['id', 'nickname']
@@ -26,8 +36,8 @@ router.get('/', async (req, res) => {
                 }]
             }],
             order: [['createdAt','DESC'], ['updatedAt','DESC']],
+
         });
-        console.log('posts : ', posts)
         res.json(posts);
     } catch (e) {
         console.log(e);
