@@ -14,6 +14,8 @@ router.get('/:tag', async (req, res, next) => {
             }
         }
         const posts = await db.Post.findAll({
+            where,
+            limit: parseInt(req.query.limit, 10),
             include: [{
                 model: db.Hashtag,
                 where: {
@@ -39,7 +41,6 @@ router.get('/:tag', async (req, res, next) => {
                     model: db.Image
                 }]
             }],
-            limit: parseInt(req.query.limit)
         })
         res.json(posts);
     } catch (e) {

@@ -181,13 +181,13 @@ function* watchLoadHashtagPosts() {
     yield takeLatest(LOAD_HASHTAG_POSTS_REQUEST, loadHashtagPosts);
 }
 
-function loadUserPostsAPI(id, lastId = 0, limit = 10) {
-    return axios.get(`/user/${id || 0}/posts?lastId=${lastId}&limit=${limit}`);
+function loadUserPostsAPI(id) {
+    return axios.get(`/user/${id || 0}/posts`);
 }
 
 function* loadUserPosts(action) {
     try {
-        const result = yield call(loadUserPostsAPI, action.data, action.lastId);
+        const result = yield call(loadUserPostsAPI, action.data);
         yield put({
             type: LOAD_USER_POSTS_SUCCESS,
             data: result.data
