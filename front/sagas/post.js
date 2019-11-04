@@ -4,6 +4,7 @@ import {
     takeLatest,
     put,
     delay,
+    throttle,
     call
 } from 'redux-saga/effects';
 import axios from 'axios';
@@ -155,14 +156,16 @@ function* loadMainPosts(action) {
 }
 
 function* watchLoadMainPosts() {
-    yield takeLatest(LOAD_MAIN_POSTS_REQUEST, loadMainPosts);
+    yield throttle(1000, LOAD_MAIN_POSTS_REQUEST, loadMainPosts);   //같은 type의 호출을 1초동안 막아준다.
 }
 
 function loadHashtagPostsAPI(tag, lastId = 0, limit = 10) {
+    console.log(lastId);
     return axios.get(`/hashtag/${encodeURIComponent(tag)}?lastId=${lastId}&limit=${limit}`);
 }
 
 function* loadHashtagPosts(action) {
+    console.log(action.lastId);
     try {
         const result = yield call(loadHashtagPostsAPI, action.data, action.lastId);
         yield put({

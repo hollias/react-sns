@@ -5,11 +5,32 @@ import { LOAD_HASHTAG_POSTS_REQUEST } from '../reducers/post';
 import PostCard from '../component/PostCard';
 
 const Hashtag = ({ tag }) => {
-    const { mainPosts } = useSelector(state => state.post);
+    const { mainPosts, hasMorePost } = useSelector(state => state.post);
+    const dispatch = useDispatch();
+
+    const onScroll = () => {
+        if(window.scrollY + document.documentElement.clientHeight > document.documentElement.scrollHeight - 300){
+            if(hasMorePost){
+                dispatch({
+                    type: LOAD_HASHTAG_POSTS_REQUEST,
+                    lastId: mainPosts[mainPosts.length - 1].id,
+                    data: tag,
+                })
+            }
+        }
+    }
+
+    useEffect(() => {
+        window.addEventListener('scroll', onScroll);
+        return () => {
+            window.removeEventListener('scroll', onScroll);
+        }
+    }, [mainPosts.length]);
+
     return (
         <div>
         {mainPosts.map(c => (
-            <PostCard key={c.createdAt} post={c} />
+            <PostCard key={+c.id} post={c} />
         ))}
         </div>
     );

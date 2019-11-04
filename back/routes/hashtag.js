@@ -41,6 +41,7 @@ router.get('/:tag', async (req, res, next) => {
                     model: db.Image
                 }]
             }],
+            order: [['createdAt', 'DESC']]
         })
         res.json(posts);
     } catch (e) {
