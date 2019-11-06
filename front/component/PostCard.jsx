@@ -72,7 +72,6 @@ const PostCard = ({ post }) => {
 
     const onRetweet = useCallback(() => {
         if(!me){
-            console.log('retweet?', me)
             return alert('로그인이 필요합니다.');
         }
 

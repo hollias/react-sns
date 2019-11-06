@@ -1,9 +1,7 @@
 // const db = require('../models');
 
 exports.isLoggedIn = (req, res, next) => {
-    console.log('로그인췍 시작',req)
     if(req.isAuthenticated()){
-        console.log('로그인췍 클리어')
         next();
     } else {
         res.status(401).send('로그인이 필요합니다.');

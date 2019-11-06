@@ -10,6 +10,7 @@ router.get('/', isLoggedIn, (req, res) => {
     // if(!req.user){
     //     return res.status(401).send('로그인이 필요합니다.');
     // }
+
     const user = Object.assign({}, req.user.toJSON());
     delete user.password;
     return res.json(user);
@@ -204,7 +205,6 @@ router.delete('/:id/follower', isLoggedIn, async (req, res, next) => {
 });
 
 router.get('/:id/posts', async (req, res, next) => {
-    console.log('userID' , req.params.id);
     try {
         const posts = await db.Post.findAll({
             where: {

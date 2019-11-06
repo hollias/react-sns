@@ -59,7 +59,6 @@ const configureStrote = (initialState, options) => {
     
     const sagaMiddleware = createSagaMiddleware();
     const middlewares = [sagaMiddleware, (store) => (next) => (action) => { //리덕스 사가에서 에러를 찾기위해 커스텀 미들웨어를 추가(생성하는 방식 기억하삼.)
-        console.log(action);                                                   
         next(action);
     }];
     const enhancer = process.env.NODE_ENV === 'production'

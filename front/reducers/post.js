@@ -10,6 +10,7 @@ export const initialState = {
     addCommentErrorReason: '',
     commentAdded: false,
     hasMorePost: false,
+    singlePost: null,
 }
 
 export const LOAD_MAIN_POSTS_REQUEST = 'LOAD_MAIN_POSTS_REQUEST';
@@ -58,38 +59,33 @@ export const REMOVE_POST_REQUEST = 'REMOVE_POST_REQUEST';
 export const REMOVE_POST_SUCCESS = 'REMOVE_POST_SUCCESS';
 export const REMOVE_POST_FAILURE = 'REMOVE_POST_FAILURE';
 
+export const LOAD_POST_REQUEST = 'LOAD_POST_REQUEST';
+export const LOAD_POST_SUCCESS = 'LOAD_POST_SUCCESS';
+export const LOAD_POST_FAILURE = 'LOAD_POST_FAILURE';
+
 const reducer = (state = initialState, action) => {
     return produce(state, (draft) => {
         switch (action.type) {
             case ADD_POST_REQUEST: {
-                return {
-                    ...state,
-                    isAddingPost: true,
-                    addPostErrorReason: '',
-                    postAdded: false,
-                };
+                draft.isAddingPost = true;
+                draft.addPostErrorReason = '';
+                draft.postAdded = false;
+                break;
             }
             case ADD_POST_SUCCESS: {
-                return {
-                    ...state,
-                    isAddingPost: false,
-                    mainPosts: [action.data, ...state.mainPosts],
-                    imagePaths: [],
-                    postAdded: true,
-                };
+                draft.isAddingPost = false;
+                draft.imagePaths = [];
+                draft.postAdded = true;
+                draft.mainPosts.unshift(action.data);
+                break;
             }
             case ADD_POST_FAILURE: {
-                return {
-                    ...state,
-                    isAddingPost: false,
-                    addPostErrorReason: action.error,
-                };
+                draft.isAddingPost = false;
+                draft.addPostErrorReason = action.error;
+                break;
             }
             case REMOVE_POST_REQUEST: {
-                // return {
-                //     ...state,
-                // };   
-                break;  //immer를 사용했을때 아무것도 안하는 로직은 break;로 끝냄
+                break; //immer를 사용했을때 아무것도 안하는 로직은 break;로 끝냄
             }
             case REMOVE_POST_SUCCESS: {
                 return {
@@ -104,10 +100,6 @@ const reducer = (state = initialState, action) => {
                 break; //immer를 사용했을때 아무것도 안하는 로직은 break;로 끝냄
             }
             case UPLOAD_IMAGES_SUCCESS: {
-                // return {
-                //     ...state,
-                //     imagePaths: [...state.imagePaths, ...action.data]
-                // };
                 action.data.forEach(p => { //그냥 데입을 해버리면 불변성이 깨지지만 immer를 사용하면 불변성 유지
                     draft.imagePaths.push(p);
                 })
@@ -117,68 +109,35 @@ const reducer = (state = initialState, action) => {
                 break; //immer를 사용했을때 아무것도 안하는 로직은 break;로 끝냄
             }
             case REMOVE_IMAGE: {
-                // return {
-                //     ...state,
-                //     imagePaths: state.imagePaths.filter((v, i) => {
-                //         return i !== action.index
-                //     })
-                // };
                 const index = draft.imagePaths.findIndex((v, i) => i === action.index);
                 darft.imagePaths.splice(index, 1);
                 break;
             }
             case ADD_COMMENT_REQUEST: {
-                return {
-                    ...state,
-                    isAddingComment: true,
-                    addCommentErrorReason: '',
-                    commentAdded: false,
-                };
+                draft.isAddingComment = true;
+                draft.addCommentErrorReason = '';
+                draft.commentAdded = false;
+                break;
             }
             case ADD_COMMENT_SUCCESS: {
-
-                const postIndex = state.mainPosts.findIndex(v => v.id === action.data.postId);
-                const post = state.mainPosts[postIndex];
-                const Comments = [...post.Comments, action.data.comment];
-                const mainPosts = [...state.mainPosts];
-                mainPosts[postIndex] = {
-                    ...post,
-                    Comments
-                };
-                console.log(mainPosts)
-                return {
-                    ...state,
-                    isAddingComment: false,
-                    mainPosts,
-                    commentAdded: true,
-                };
+                const postIndex = draft.mainPosts.findIndex(v => v.id === action.data.postId);
+                draft.mainPosts[postIndex].Comments.push(action.data.comment);
+                draft.isAddingComment = false;
+                draft.commentAdded = true;
+                break;
             }
             case ADD_COMMENT_FAILURE: {
-                return {
-                    ...state,
-                    isAddingComment: false,
-                    addCommentErrorReason: action.error,
-                };
+                draft.isAddingComment = false;
+                draft.addCommentErrorReason = action.error;
+                break;
             }
             case LIKE_POST_REQUEST: {
                 break; //immer를 사용했을때 아무것도 안하는 로직은 break;로 끝냄
             }
             case LIKE_POST_SUCCESS: {
-
-                const postIndex = state.mainPosts.findIndex(v => v.id === action.data.postId);
-                const post = state.mainPosts[postIndex];
-                const Likers = [...post.Likers, {
-                    id: action.data.userId
-                }];
-                const mainPosts = [...state.mainPosts];
-                mainPosts[postIndex] = {
-                    ...post,
-                    Likers
-                };
-                return {
-                    ...state,
-                    mainPosts,
-                };
+                const postIndex = draft.mainPosts.findIndex(v => v.id === action.data.postId);
+                state.mainPosts[postIndex].Likers.unshift(action.data.userId);
+                break;
             }
             case LIKE_POST_FAILURE: {
                 break; //immer를 사용했을때 아무것도 안하는 로직은 break;로 끝냄
@@ -187,20 +146,10 @@ const reducer = (state = initialState, action) => {
                 break; //immer를 사용했을때 아무것도 안하는 로직은 break;로 끝냄
             }
             case UNLIKE_POST_SUCCESS: {
-
-                const postIndex = state.mainPosts.findIndex(v => v.id === action.data.postId);
-                const post = state.mainPosts[postIndex];
-                const Likers = post.Likers.filter(v => v.id !== action.data.userId);
-                const mainPosts = [...state.mainPosts];
-                debugger;
-                mainPosts[postIndex] = {
-                    ...post,
-                    Likers
-                };
-                return {
-                    ...state,
-                    mainPosts,
-                };
+                const postIndex = draft.mainPosts.findIndex(v => v.id === action.data.postId);
+                const likeIndex = draft.mainPosts[postIndex].Likers.findIndex(v => v.id === action.data.userId);
+                draft.mainPosts[postIndex].Likers.splice(likeIndex, 1);
+                break;
             }
             case UNLIKE_POST_FAILURE: {
                 break; //immer를 사용했을때 아무것도 안하는 로직은 break;로 끝냄
@@ -209,49 +158,46 @@ const reducer = (state = initialState, action) => {
                 break; //immer를 사용했을때 아무것도 안하는 로직은 break;로 끝냄
             }
             case RETWEET_SUCCESS: {
-                return {
-                    ...state,
-                    mainPosts: [action.data, ...state.mainPosts],
-                };
+                draft.mainPosts = action.data;
+                break;
             }
             case RETWEET_FAILURE: {
                 break; //immer를 사용했을때 아무것도 안하는 로직은 break;로 끝냄
             }
             case LOAD_COMMENTS_SUCCESS: {
-                const postIndex = state.mainPosts.findIndex(v => v.id === action.data.postId);
-                const post = state.mainPosts[postIndex];
-                const Comments = action.data.comments;
-                const mainPosts = [...state.mainPosts];
-                mainPosts[postIndex] = {
-                    ...post,
-                    Comments
-                };
-                return {
-                    ...state,
-                    mainPosts,
-                };
+                const postIndex = draft.mainPosts.findIndex(v => v.id === action.data.postId);
+                draft.mainPosts[postIndex].Comments = action.data.comments;
+                break;
             }
             case LOAD_HASHTAG_POSTS_REQUEST:
             case LOAD_USER_POSTS_REQUEST:
             case LOAD_MAIN_POSTS_REQUEST: {
-                return {
-                    ...state,
-                    mainPosts: action.lastId === 0 ? [] : state.mainPosts,
-                    hasMorePost: action.lastId ? state.hasMorePost : true,
-                };
+                draft.mainPosts = !action.lastId ? [] : draft.mainPosts;
+                draft.hasMorePost = action.lastId ? draft.hasMorePost : true;
+                break;
             }
             case LOAD_HASHTAG_POSTS_SUCCESS:
             case LOAD_USER_POSTS_SUCCESS:
             case LOAD_MAIN_POSTS_SUCCESS: {
-                return {
-                    ...state,
-                    mainPosts: state.mainPosts.concat(action.data),
-                    hasMorePost: action.data.length === 10,
-                };
+                action.data.forEach(d => {
+                    draft.mainPosts.push(d);
+                });
+                draft.hasMorePost = action.data.length === 10;
+                break;
             }
             case LOAD_HASHTAG_POSTS_FAILURE:
             case LOAD_USER_POSTS_FAILURE:
             case LOAD_MAIN_POSTS_FAILURE: {
+                break; //immer를 사용했을때 아무것도 안하는 로직은 break;로 끝냄
+            }
+            case LOAD_POST_REQUEST: {
+                break;
+            }
+            case LOAD_POST_SUCCESS: {
+                draft.singlePost = action.data;
+                break;
+            }
+            case LOAD_POST_FAILURE: {
                 break; //immer를 사용했을때 아무것도 안하는 로직은 break;로 끝냄
             }
             default: {
