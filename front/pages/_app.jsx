@@ -34,8 +34,8 @@ _app.propTypes = {
     pageProps: PropTypes.object.isRequired,
 };
 
-_app.getInitialProps = async(context) => {  //getInitialProps는 page에서만 사용가능
-    const { ctx, Component } = context;
+_app.getInitialProps = async(context) => {  //getInitialProps는 page에서만 사용가능 //context는 next에서 내려주는것 //getInitialProps도 라이프사이클인데 제일 먼저 실행됨(랜더링전)
+    const { ctx, Component } = context; //commponent는 각 pages
     let pageProps = {};
 
     const state = ctx.store.getState(); //store안에 데이터도 가져올수있음.
@@ -49,7 +49,7 @@ _app.getInitialProps = async(context) => {  //getInitialProps는 page에서만 �
         })
     }
     if(Component.getInitialProps){
-        pageProps = await Component.getInitialProps(ctx);
+        pageProps = await Component.getInitialProps(ctx);   //각 pages에 있는 getInitialProps 를 실행 (랜더링전)
     }
 
     return { pageProps };

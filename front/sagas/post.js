@@ -42,7 +42,9 @@ import {
     REMOVE_POST_SUCCESS,
     REMOVE_POST_FAILURE,
     REMOVE_POST_REQUEST,
-    LOAD_POST_REQUEST
+    LOAD_POST_REQUEST,
+    LOAD_POST_FAILURE,
+    LOAD_POST_SUCCESS
 } from '../reducers/post';
 import {
     ADD_POST_TO_ME,

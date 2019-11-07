@@ -293,7 +293,7 @@ router.delete('/:postId', isLoggedIn, async (req, res, next) => {
 router.get('/:id', async (req, res, next) => {
     try {
         const post = await db.Post.findOne({
-            where: req.params.id,
+            where: { id: req.params.id },
             include:[{
                 model: db.User,
                 attributes: ['id', 'nickname'],
