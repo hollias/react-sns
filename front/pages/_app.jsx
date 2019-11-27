@@ -72,7 +72,7 @@ _app.getInitialProps = async(context) => {  //getInitialProps는 page에서만 �
         })
     }
     if(Component.getInitialProps){
-        pageProps = await Component.getInitialProps(ctx);   //각 pages에 있는 getInitialProps 를 실행 (랜더링전)
+        pageProps = await Component.getInitialProps(ctx) || {};   //각 pages에 있는 getInitialProps 를 실행 (랜더링전)
     }
 
     return { pageProps };
