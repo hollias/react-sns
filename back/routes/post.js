@@ -273,7 +273,6 @@ router.delete('/:postId', isLoggedIn, async (req, res, next) => {
                 id: req.params.postId
             },
         });
-        console.log(post);
         if (!post) {
             res.status(404).send('포스트가 존재하지 않습니다.');
         }
@@ -285,6 +284,29 @@ router.delete('/:postId', isLoggedIn, async (req, res, next) => {
         });
 
         res.send(req.params.postId)
+    } catch (e) {
+        console.error(e);
+        next(e);
+    }
+});
+
+router.get('/:id', async (req, res, next) => {
+    try {
+        const post = await db.Post.findOne({
+            where: { id: req.params.id },
+            include:[{
+                model: db.User,
+                attributes: ['id', 'nickname'],
+            }, {
+                model: db.Image,
+            }]
+        });
+        
+        if(!post){
+            res.status(404).send('게시글이 없습니다.')
+        }
+
+        res.json(post);
     } catch (e) {
         console.error(e);
         next(e);

@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from 'react';
+import Link from 'next/link';
 import { Avatar, Card, Button } from 'antd';
 import Meta from 'antd/lib/card/Meta';
 import { useDispatch, useSelector } from 'react-redux';
@@ -17,9 +18,9 @@ const UserProfile = () => {
         <div>
             <Card
                 actions={[
-                    <div key="twit">게시글 <br />{me.Posts.length}</div>,
-                    <div key="following">팔로잉 <br />{me.Followings.length}</div>,
-                    <div key="follower">팔로워 <br />{me.Followers.length}</div>
+                    <Link href="/profile" key="twit"><a><div>게시글 <br />{me.Posts.length}</div></a></Link>,
+                    <Link href="/profile" key="following"><a><div>팔로잉 <br />{me.Followings.length}</div></a></Link>,
+                    <Link href="/profile" key="follower"><a><div>팔로워 <br />{me.Followers.length}</div></a></Link>
                 ]}>
                 <Meta 
                     avatar={<Avatar>{me.nickname[0]}</Avatar>} 

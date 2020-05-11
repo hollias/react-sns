@@ -1,5 +1,5 @@
 import React from 'react';
-import Head from 'next/head';
+import Helmet from 'react-helmet'
 import withRedux from 'next-redux-wrapper';
 import withReduxSaga from 'next-redux-saga';
 import AppLayout from '../component/AppLayout';
@@ -11,20 +11,43 @@ import createSagaMiddleware from '@redux-saga/core';
 import rootSaga from '../sagas';
 import { LOAD_USER_REQUEST } from '../reducers/user';
 import Axios from 'axios';
+import { Container } from 'next/app';
 
 const _app = ({ Component, store, pageProps }) => {
     return (
-        <Provider store={store}>
-            <Head>
-                <title>NsWorld</title>
-                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/3.21.4/antd.css"></link>
-                <link rel="stylesheet" type="text/css" charSet="UTF-8" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.min.css" />
-                <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css" />
-            </Head>  
-            <AppLayout>
-                <Component {...pageProps} />
-            </AppLayout>
-        </Provider>
+        <Container>
+            <Provider store={store}>
+                <Helmet 
+                    title="Nsworld"
+                    htmlAttributes={{ lang: 'ko' }}
+                    meta={[{
+                        charset: 'UTF-8'
+                    }, {
+                        name: 'viewport', content: 'width-device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=yes,viewport-fit=cover'
+                    }, {
+                        'http-equiv': 'X-UA-Compatible', content: 'IE=edge'
+                    }, {
+                        name: 'description', content: 'Nsworld 하숙',
+                    }, {
+                        name: 'og:title', content: 'Nsworld',
+                    }, {
+                        name: 'og:description', content:'Nsworld 하숙',
+                    }, {
+                        property: 'og:type', content: 'website',
+                    }]}
+                    link={[{
+                        rel: 'stylesheet', href: 'https://cdnjs.cloudflare.com/ajax/libs/antd/3.21.4/antd.css'
+                    }, {
+                        rel: 'stylesheet', href: 'https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.min.css'
+                    }, {
+                        rel: 'stylesheet', href: 'https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css'
+                    }]}
+                />
+                <AppLayout>
+                    <Component {...pageProps} />
+                </AppLayout>
+            </Provider>
+        </Container>
     );
 };
 
@@ -34,8 +57,8 @@ _app.propTypes = {
     pageProps: PropTypes.object.isRequired,
 };
 
-_app.getInitialProps = async(context) => {  //getInitialProps는 page에서만 사용가능
-    const { ctx, Component } = context;
+_app.getInitialProps = async(context) => {  //getInitialProps는 page에서만 사용가능 //context는 next에서 내려주는것 //getInitialProps도 라이프사이클인데 제일 먼저 실행됨(랜더링전)
+    const { ctx, Component } = context; //commponent는 각 pages
     let pageProps = {};
 
     const state = ctx.store.getState(); //store안에 데이터도 가져올수있음.
@@ -49,7 +72,7 @@ _app.getInitialProps = async(context) => {  //getInitialProps는 page에서만 �
         })
     }
     if(Component.getInitialProps){
-        pageProps = await Component.getInitialProps(ctx);
+        pageProps = await Component.getInitialProps(ctx) || {};   //각 pages에 있는 getInitialProps 를 실행 (랜더링전)
     }
 
     return { pageProps };
@@ -59,7 +82,6 @@ const configureStrote = (initialState, options) => {
     
     const sagaMiddleware = createSagaMiddleware();
     const middlewares = [sagaMiddleware, (store) => (next) => (action) => { //리덕스 사가에서 에러를 찾기위해 커스텀 미들웨어를 추가(생성하는 방식 기억하삼.)
-        console.log(action);                                                   
         next(action);
     }];
     const enhancer = process.env.NODE_ENV === 'production'

@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import Router from 'next/router';
 import Link from 'next/link';
 import PropTypes from 'prop-types';
 import { Col, Input, Menu, Row } from 'antd';
@@ -9,7 +10,9 @@ import { LOAD_USER_REQUEST } from '../reducers/user';
 
 const AppLayout = ({ children }) => {
     const { me } = useSelector(state => state.user);
-  
+    const onSearch = (value) => {
+        Router.push({ pathname: '/hashtag', query: { tag: value }}, `/hashtag/${value}`);
+    }
     return (
         <div>
             <Menu mode="horizontal">

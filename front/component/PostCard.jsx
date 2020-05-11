@@ -8,6 +8,11 @@ import { ADD_COMMENT_REQUEST, LOAD_COMMENTS_REQUEST, UNLIKE_POST_REQUEST, LIKE_P
 import PostImages from './PostImages';
 import PostCardContent from './PostCardContent';
 import { UNFOLLOW_USER_REQUEST, FOLLOW_USER_REQUEST } from '../reducers/user';
+import styled from 'styled-components';
+
+export const PostCardWrapper = styled.div`
+  margin-bottom: 20px;
+`;
 
 const PostCard = ({ post }) => {
     const [commentFormOpened, setCommentFormOpened] = useState(false);
@@ -72,7 +77,6 @@ const PostCard = ({ post }) => {
 
     const onRetweet = useCallback(() => {
         if(!me){
-            console.log('retweet?', me)
             return alert('로그인이 필요합니다.');
         }
 
@@ -103,9 +107,8 @@ const PostCard = ({ post }) => {
     })
 
     return (
-        <div>
+        <PostCardWrapper>
             <Card 
-                key={+post.createdAt}
                 cover={post.Images && post.Images[0] && <PostImages images={post.Images} />}
                 actions={[
                     <Icon key="retweet" type="retweet" onClick={onRetweet}/>,
@@ -194,7 +197,7 @@ const PostCard = ({ post }) => {
                     />
               </>
             )}
-        </div>
+        </PostCardWrapper>
     );
 };
 
@@ -203,7 +206,7 @@ PostCard.propTypes = {
         User : PropTypes.object,
         content : PropTypes.string,
         img : PropTypes.string,
-        createAt : PropTypes.object,
+        createAt : PropTypes.string,
     })
 };
 

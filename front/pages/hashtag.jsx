@@ -40,6 +40,7 @@ Hashtag.propTypes = {
     tag: PropTypes.string.isRequired,
 };
 
+//front 서버에서 보내온 호출을 받아서 쓰기도함. 서버사이드랜더링할때도 쓰고
 Hashtag.getInitialProps = async(context) => {
     const tag = context.query.tag;
     context.store.dispatch({
