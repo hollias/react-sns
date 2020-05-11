@@ -1,23 +1,23 @@
-import { Model, DataTypes } from "sequelize";
+import { Model, DataTypes } from "sequelize/types";
 import sequelize from './sequelize';
 import { dbType } from ".";
 
-class Post extends Model {
+class Hashtag extends Model {
   public readonly id!: number;
-  public content!: string;
+  public name!: string;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
 
-Post.init({
-  content: {
-    type: DataTypes.TEXT,
-    allowNull: false
+Hashtag.init({
+  name: {
+    type: DataTypes.STRING(20),
+    allowNull: false,
   }
 }, {
   sequelize,
-  modelName: 'Post',
-  tableName: 'post',
+  modelName: 'Hashtag',
+  tableName: 'hashtag',
   charset: 'utf8mb4', //  한글+이모티콘
   collate: 'utf8mb4_general_ci',
 });
@@ -26,4 +26,4 @@ export const associate = (db: dbType) => {
 
 }
 
-export default Post;
+export default Hashtag;

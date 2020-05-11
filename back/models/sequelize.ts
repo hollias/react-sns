@@ -7,4 +7,5 @@ const db = {};
 
 const sequelize = new Sequelize(database, username, password, config[env]);
 
+export { sequelize };
 export default sequelize;

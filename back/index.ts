@@ -8,8 +8,8 @@ import * as passport from 'passport';
 import * as hpp from 'hpp';
 import * as helmet from 'helmet';
 
-import passportConfig from './passport';
-import db from './models';
+//import passportConfig from './passport';
+import { sequelize } from './models';
 
 const userAPIRouter = require('./routes/user');
 const postAPIRouter = require('./routes/post');
@@ -56,8 +56,13 @@ app.use(expressSession({
 app.use(passport.initialize());
 app.use(passport.session());
 
-db.sequelize.sync();
-passportConfig();
+sequelize.sync({ force: false })
+  .then(() => {
+    console.log('데이터베이스 연결 성공');
+  }).catch((err: Error) => {
+    console.error(err);
+  });
+//passportConfig();
 
 
 app.use('/api/user', userAPIRouter);
