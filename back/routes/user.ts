@@ -4,10 +4,11 @@ import * as passport from 'passport';
 import { isLoggedIn } from './middleware';
 import User from '../models/user';
 import Post from '../models/post';
+import { Error } from 'sequelize/types';
 
 const router = express.Router();
 
-router.get('/', isLoggedIn, (req: Express.Request, res) => {
+router.get('/', isLoggedIn, (req, res) => {
   const user = req.user!.toJSON() as User;
   delete user.password;
   return res.json(user);
@@ -60,7 +61,7 @@ router.get('/:id', async (req, res, next) => {
       attributes: ['id', 'nickname']
     });
 
-    const jsonUser = user.toJSON();
+    const jsonUser = user!.toJSON();
     jsonUser.Posts = jsonUser.Posts ? jsonUser.Posts.length : 0;
     jsonUser.Followings = jsonUser.Followings ? jsonUser.Followings.length : 0;
     jsonUser.Follower = jsonUser.Follower ? jsonUser.Follower.length : 0;
@@ -71,21 +72,23 @@ router.get('/:id', async (req, res, next) => {
   }
 });
 
-router.post('/logout', (req, res) => {
+router.post('/logout', isLoggedIn, (req, res) => {
   req.logout();
-  req.session.destroy();
-  res.send('로그아웃하였습니다.');
+  req.session!.destroy(() => {
+    res.send('로그아웃하였습니다.');
+  });
 });
+
 router.post('/login', (req, res, next) => {
-  passport.authenticate('local', (err, user, info) => {
+  passport.authenticate('local', (err: Error, user: User, info: { message : string }) => {
     if (err) {
       console.error(err);
       return next(err);
     }
     if (info) {
-      return res.status(401).send(info.reason);
+      return res.status(401).send(info.message);
     }
-    return req.login(user, async (loginErr) => {
+    return req.login(user, async (loginErr: Error) => {
       try {
         if (loginErr) {
           return next(loginErr);
@@ -118,11 +121,12 @@ router.post('/login', (req, res, next) => {
     })
   })(req, res, next);
 });
+
 router.post('/:id/follow', isLoggedIn, async (req, res, next) => {
   try {
     const me = await User.findOne({
       where: {
-        id: req.user.id
+        id: req.user!.id
       }
     });
     await me.addFollowing(req.params.id);
