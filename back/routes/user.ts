@@ -39,6 +39,11 @@ router.post('/', async (req, res, next) => {    //login
   }
 });
 
+interface IUser extends User{
+  PostCount: number;
+  FollowingCount: number;
+  FollowerCount: number;
+}
 router.get('/:id', async (req, res, next) => {
   try {
     const user = await User.findOne({
@@ -61,10 +66,15 @@ router.get('/:id', async (req, res, next) => {
       attributes: ['id', 'nickname']
     });
 
-    const jsonUser = user!.toJSON();
-    jsonUser.Posts = jsonUser.Posts ? jsonUser.Posts.length : 0;
-    jsonUser.Followings = jsonUser.Followings ? jsonUser.Followings.length : 0;
-    jsonUser.Follower = jsonUser.Follower ? jsonUser.Follower.length : 0;
+    if(!user) {
+      return res.status(404).send('사용자가 없습니다.');
+    }
+
+    const jsonUser = user.toJSON() as IUser;
+    jsonUser.PostCount = jsonUser.Posts ? jsonUser.Posts.length : 0;
+    jsonUser.FollowingCount = jsonUser.Followings ? jsonUser.Followings.length : 0;
+    jsonUser.FollowerCount = jsonUser.Follower ? jsonUser.Follower.length : 0;
+
     res.json(jsonUser);
   } catch (e) {
     console.log(e);
@@ -129,6 +139,7 @@ router.post('/:id/follow', isLoggedIn, async (req, res, next) => {
         id: req.user!.id
       }
     });
+
     await me.addFollowing(req.params.id);
     res.send(req.params.id);
   } catch (e) {
@@ -159,6 +170,11 @@ router.get('/:id/followings', isLoggedIn, async (req, res, next) => {
         id: parseInt(req.params.id, 10) || (req.user && req.user.id) || 0
       }
     });
+    
+    if(!user){
+      return res.status(404).send('사용자가 없습니다.')
+    }
+
     const followings = await user.getFollowings({
       attributes: ['id', 'nickname'],
       limit: parseInt(req.query.limit, 10),
